@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"os/exec"
 	"time"
 )
@@ -15,8 +16,8 @@ type camaraService struct {
 	height    string // The height of the video stream e.g. "720"
 	framerate string // The framerate of the video stream e.g. "15"
 
-	preview   string // "1" = the preview window will be shown. "0" = the preview window will be hidden
-	autofocus string // "1" = the autofocus will be enabled. "0" = autofocus will be disabled
+	preview string // "1" = the preview window will be shown. "0" = the preview window will be hidden
+	codec   string // "1" = audio enabled "0" = audio disabled
 }
 
 func NewCamaraService(outputFolder string) *camaraService {
@@ -25,13 +26,14 @@ func NewCamaraService(outputFolder string) *camaraService {
 		width:        "1280",
 		height:       "720",
 		preview:      "0",
-		framerate:    "15",
-		autofocus:    "1",
-		time:         "0",
+		framerate:    "40",
+		time:         "30000",
+		codec:        "libav",
 	}
 }
 
-func (s *camaraService) StartRecording() error {
+func (s *camaraService) StartRecording() {
+	s.stopPreviousRecording()
 	for {
 		currentTime := time.Now()
 		fileName := s.outputFolder + "/" + currentTime.Format(time.RFC3339) + ".mp4"
@@ -43,14 +45,23 @@ func (s *camaraService) StartRecording() error {
 			"--qt-preview", s.preview,
 			"--framerate", s.framerate,
 			"--timeout", s.time,
-			"--autofocus-mode", s.autofocus,
 			"--output", fileName,
-			"--codec", "libav",
+			"--codec", s.codec,
 		)
 
-		err := cmd.Run()
+		_, err := cmd.Output()
+
 		if err != nil {
-			return err
+			panic(err)
 		}
+		fmt.Printf("Recording saved as '%s'\n", fileName)
+	}
+}
+
+func (s *camaraService) stopPreviousRecording() {
+	cmd := exec.Command("killall", "libcamera-vid")
+	err := cmd.Run()
+	if err != nil {
+		fmt.Printf("%s\n", err)
 	}
 }
