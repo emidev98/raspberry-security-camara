@@ -1,7 +1,7 @@
 # Raspberry PI Security Camara
 
 <p align="center">
-    <img href="./icon.png">
+    <img href="https://raw.githubusercontent.com/emidev98/raspberry-security-camara/main/icon.png"/>
 </p>
 
 Monorepo to run a security camara using the RaspberryPi. It contains the [api](./api/) written in GoLang and the [frontend](./frontend/) that uses the driver [libcamera-vid](https://www.raspberrypi.com/documentation/computers/camera_software.html) to record.
