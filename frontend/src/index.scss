@@ -1,0 +1,15 @@
+@import '@fontsource/raleway/300.css';
+@import '@fontsource/raleway/400.css';
+@import '@fontsource/raleway/500.css';
+@import '@fontsource/raleway/700.css';
+
+body {
+    margin: 0;
+    font-family: 'Raleway', sans-serif;
+
+    .App {
+        display: flex;
+        align-items: center;
+        height: 100vh;
+    }
+}
