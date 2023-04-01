@@ -48,5 +48,6 @@ func (s routerService) InitRestRouter() {
 	router.HandleFunc("/healthcheck", s.healthcheck.HealthcheckHandler).Methods("GET")
 
 	log.Printf("Starting web server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+
+	log.Fatal(http.ListenAndServeTLS(":8080", "store/cert.pem", "store/key.pem", router))
 }
