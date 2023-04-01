@@ -10,16 +10,24 @@ import (
 
 type downloadService struct {
 	downnloadFolder string
+	tokenService    *tokenService
 }
 
-func NewDownloadService(downnloadFolder string) *downloadService {
+func NewDownloadService(downnloadFolder string, tokenService *tokenService) *downloadService {
 	downloadService := &downloadService{
 		downnloadFolder: downnloadFolder,
+		tokenService:    tokenService,
 	}
 	return downloadService
 }
 
 func (s downloadService) FileHandler(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("token")
+	if s.tokenService.IsValidToken(token) {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Header().Set("Content-Type", "application/json")
+		return
+	}
 	vars := mux.Vars(r)
 	fileID := vars["id"]
 

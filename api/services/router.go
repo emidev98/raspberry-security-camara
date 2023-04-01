@@ -13,16 +13,21 @@ type routerService struct {
 	healthcheck     *healthcheckService
 	filesService    *filesService
 	downloadService *downloadService
+	tokenService    *tokenService
 }
 
 func NewRouterService(filesFolder string) *routerService {
 	createFilesFolder(filesFolder)
+	tokenService := NewTokenService()
 
 	rs := &routerService{
-		filesService:    NewFilesService(filesFolder),
-		downloadService: NewDownloadService(filesFolder),
+		filesService:    NewFilesService(filesFolder, tokenService),
+		downloadService: NewDownloadService(filesFolder, tokenService),
 		healthcheck:     NewHealthcheckService(),
+		tokenService:    tokenService,
 	}
+
+	rs.tokenService.CreateToeknIfDoesNotExist()
 
 	return rs
 }
@@ -44,8 +49,9 @@ func (s routerService) InitRestRouter() {
 
 	router.HandleFunc("/files", s.filesService.FilesHandler).Methods("GET")
 	router.HandleFunc("/files/{id}", s.filesService.FileHandler).Methods("GET")
-	router.HandleFunc("/download/files/{id}", s.downloadService.FileHandler).Methods("GET")
-	router.HandleFunc("/healthcheck", s.healthcheck.HealthcheckHandler).Methods("GET")
+	router.HandleFunc("/downloads/{id}", s.downloadService.FileHandler).Methods("GET")
+	router.HandleFunc("/tokens", s.tokenService.HandleValidateToken).Methods("POST")
+	router.HandleFunc("/healthchecks", s.healthcheck.HealthcheckHandler).Methods("GET")
 
 	log.Printf("Starting web server on :8080")
 

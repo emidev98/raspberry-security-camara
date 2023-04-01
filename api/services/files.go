@@ -13,17 +13,26 @@ import (
 
 type filesService struct {
 	outputFolder string
+	tokenService *tokenService
 }
 
-func NewFilesService(outputFolder string) *filesService {
+func NewFilesService(outputFolder string, tokenService *tokenService) *filesService {
 	fileService := &filesService{
 		outputFolder: outputFolder,
+		tokenService: tokenService,
 	}
 
 	return fileService
 }
 
 func (s filesService) FilesHandler(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("token")
+	if s.tokenService.IsValidToken(token) {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Header().Set("Content-Type", "application/json")
+		return
+	}
+
 	files, err := os.ReadDir(s.outputFolder)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -75,6 +84,13 @@ func (s filesService) FilesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s filesService) FileHandler(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("token")
+	if s.tokenService.IsValidToken(token) {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Header().Set("Content-Type", "application/json")
+		return
+	}
+
 	vars := mux.Vars(r)
 	fileID := vars["id"]
 

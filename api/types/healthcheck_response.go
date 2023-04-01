@@ -1,11 +1,11 @@
 package types
 
 type healthcheck struct {
-	status bool
+	Status bool
 }
 
 func NewHealthcheck() healthcheck {
 	return healthcheck{
-		status: true,
+		Status: true,
 	}
 }
