@@ -2,13 +2,14 @@ import {
     HistoryDetails,
     History,
     Login,
-    Stream
+    Stream,
+    Error
 } from "./pages";
 
 export const routes = () => {
     return [
         {
-            path: "/login",
+            path: "/",
             element: <Login />,
         },
         {
@@ -24,8 +25,12 @@ export const routes = () => {
             element: <HistoryDetails />,
         },
         {
+            path: "/error",
+            element: <Error msg="API Error"/>,
+        },
+        {
             path: "*",
-            element: <Login />,
-        }
+            element: <Error msg="Page not found"/>,
+        },
     ]
 }
