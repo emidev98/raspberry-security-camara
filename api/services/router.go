@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+
+	"github.com/rs/cors"
 )
 
 type routerService struct {
@@ -45,15 +47,29 @@ func createFilesFolder(filesFolder string) {
 }
 
 func (s routerService) InitRestRouter() {
-	router := mux.NewRouter()
+	r := mux.NewRouter()
 
-	router.HandleFunc("/files", s.filesService.FilesHandler).Methods("GET")
-	router.HandleFunc("/files/{id}", s.filesService.FileHandler).Methods("GET")
-	router.HandleFunc("/downloads/{id}", s.downloadService.FileHandler).Methods("GET")
-	router.HandleFunc("/tokens", s.tokenService.HandleValidateToken).Methods("POST")
-	router.HandleFunc("/healthchecks", s.healthcheck.HealthcheckHandler).Methods("GET")
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "Hello, CORS-enabled GoLang server!")
+	})
+
+	r.HandleFunc("/api/v1/files", s.filesService.FilesHandler).Methods(http.MethodGet)
+	r.HandleFunc("/api/v1/files/{id}", s.filesService.FileHandler).Methods(http.MethodGet)
+	r.HandleFunc("/api/v1/downloads/{id}", s.downloadService.FileHandler).Methods(http.MethodGet)
+	r.HandleFunc("/api/v1/auth/token", s.tokenService.HandleValidateToken).Methods(http.MethodPost)
+	r.HandleFunc("/api/v1/healthcheck", s.healthcheck.HealthcheckHandler).Methods(http.MethodGet)
+
+	// Configure CORS options
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"https://localhost:3000"},
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodOptions},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(r)
 
 	log.Printf("Starting web server on :8080")
 
-	log.Fatal(http.ListenAndServeTLS(":8080", "store/cert.pem", "store/key.pem", router))
+	log.Fatal(http.ListenAndServeTLS(":8080", "store/cert.pem", "store/key.pem", handler))
 }

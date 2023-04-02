@@ -22,7 +22,7 @@ func NewDownloadService(downnloadFolder string, tokenService *tokenService) *dow
 }
 
 func (s downloadService) FileHandler(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("token")
+	token := r.Header.Get("Token")
 	if s.tokenService.IsValidToken(token) {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Header().Set("Content-Type", "application/json")

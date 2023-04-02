@@ -26,7 +26,7 @@ func NewFilesService(outputFolder string, tokenService *tokenService) *filesServ
 }
 
 func (s filesService) FilesHandler(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("token")
+	token := r.Header.Get("Token")
 	if s.tokenService.IsValidToken(token) {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Header().Set("Content-Type", "application/json")
@@ -84,7 +84,7 @@ func (s filesService) FilesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s filesService) FileHandler(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("token")
+	token := r.Header.Get("Token")
 	if s.tokenService.IsValidToken(token) {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Header().Set("Content-Type", "application/json")

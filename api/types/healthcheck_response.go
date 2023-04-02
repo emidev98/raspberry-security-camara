@@ -1,7 +1,7 @@
 package types
 
 type healthcheck struct {
-	Status bool
+	Status bool `json:"status"`
 }
 
 func NewHealthcheck() healthcheck {

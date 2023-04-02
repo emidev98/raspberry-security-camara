@@ -29,7 +29,7 @@ func NewTokenService() *tokenService {
 func (s tokenService) HandleValidateToken(w http.ResponseWriter, r *http.Request) {
 	// Read the token from the request header
 	// and compare it with the token stored in the file
-	token := r.Header.Get("token")
+	token := r.Header.Get("Token")
 
 	if !s.IsValidToken(token) {
 		w.WriteHeader(http.StatusUnauthorized)
