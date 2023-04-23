@@ -27,7 +27,7 @@ func NewFilesService(outputFolder string, tokenService *tokenService) *filesServ
 
 func (s filesService) FilesHandler(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("Token")
-	if s.tokenService.IsValidToken(token) {
+	if !s.tokenService.IsValidToken(token) {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Header().Set("Content-Type", "application/json")
 		return
@@ -83,9 +83,34 @@ func (s filesService) FilesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(filesResponse)
 }
 
+func (s filesService) FileLastHandler(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("Token")
+	if !s.tokenService.IsValidToken(token) {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Header().Set("Content-Type", "application/json")
+		return
+	}
+
+	files, err := os.ReadDir(s.outputFolder)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Error reading files: %v\n", err)
+		return
+	}
+
+	filesResponse := types.NewFileResponse(
+		files[len(files)-1].Name(),
+		true,
+	)
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(filesResponse)
+}
+
 func (s filesService) FileHandler(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("Token")
-	if s.tokenService.IsValidToken(token) {
+	if !s.tokenService.IsValidToken(token) {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Header().Set("Content-Type", "application/json")
 		return

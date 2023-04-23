@@ -49,12 +49,10 @@ func createFilesFolder(filesFolder string) {
 func (s routerService) InitRestRouter() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Hello, CORS-enabled GoLang server!")
-	})
-
 	r.HandleFunc("/api/v1/files", s.filesService.FilesHandler).Methods(http.MethodGet)
+	r.HandleFunc("/api/v1/files/latest", s.filesService.FileLastHandler).Methods(http.MethodGet)
 	r.HandleFunc("/api/v1/files/{id}", s.filesService.FileHandler).Methods(http.MethodGet)
+	r.HandleFunc("/api/v1/downloads/latest", s.downloadService.FileLastHandler).Methods(http.MethodGet)
 	r.HandleFunc("/api/v1/downloads/{id}", s.downloadService.FileHandler).Methods(http.MethodGet)
 	r.HandleFunc("/api/v1/auth/token", s.tokenService.HandleValidateToken).Methods(http.MethodPost)
 	r.HandleFunc("/api/v1/healthcheck", s.healthcheck.HealthcheckHandler).Methods(http.MethodGet)

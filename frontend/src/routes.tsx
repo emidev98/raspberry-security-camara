@@ -28,9 +28,9 @@ export const routes = () => {
             path: "/error",
             element: <Error msg="API Error"/>,
         },
-        {
-            path: "*",
-            element: <Error msg="Page not found"/>,
-        },
+        // {
+        //     path: "*",
+        //     element: <Error msg="Page not found"/>,
+        // },
     ]
 }
